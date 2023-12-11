@@ -1,25 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Home } from "./components/Home";
+import { SET_SHOW_ERROR_MODAL } from "./context/actions";
+import { useAppContext } from "./context/AppContext";
 
-function App() {
+const ModalError = () => {
+  const { dispatch } = useAppContext();
+  const closeModal = () => {
+    dispatch({
+      type: SET_SHOW_ERROR_MODAL,
+      data: false,
+    });
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{
+      position: "absolute", 
+      backgroundColor: '#80808052', 
+      width: '90%', 
+      height: '90%',
+      display: 'flex',
+      flexFlow: 'column nowrap',
+      justifyContent: 'center',
+      alignItems: 'center'}}>
+      <p>ESTO ES UN MODAL DE ERROR</p>
+      <button onClick={closeModal}>Cerrar Modal</button>
     </div>
   );
-}
+};
+
+const App = () => {
+  const { state } = useAppContext();
+  const { showError } = state;
+  const [showModal, setShowModal] = useState(showError);
+
+  useEffect(() => {
+    setShowModal(showError);
+  }, [state.showError]);
+
+  return (
+    <>
+      {showModal && <ModalError />}
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </BrowserRouter>
+    </>
+  );
+};
 
 export default App;
