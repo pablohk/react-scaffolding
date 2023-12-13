@@ -3,21 +3,25 @@ import { BASE_API_URL} from './endpoints';
 
 const ENVIRONMENT = process.env.REACT_APP_ENV;
 
+/** Para llamadas a APIs públicas, que no necesitan autenticación */
 const publicInstance = axios.create({
   baseURL: BASE_API_URL[ENVIRONMENT],
 });
 
+/** Para llamadas a APIs privadas, que requieren autenticación */
 const privateInstance = axios.create({
   baseURL: BASE_API_URL[ENVIRONMENT],
   withCredentials: true,
 });
 
+/** Para llamadas a APIs privadas. En este caso se usará cuando tengamos las urls de JSON HATEOAS */
 const privateCustomInstance = axios.create({
    // HABILITARLO CUANDO SE USE CON LA API DE PIH
    // DESABILIATDO para pruebas con la pokeapi
   // withCredentials: true,
 });
 
+/** Interceptor para las respuestas de llamadas a APIs públicas */
 publicInstance.interceptors.response.use(
   (response)=> {
     return response;
@@ -29,6 +33,10 @@ publicInstance.interceptors.response.use(
 
   }
 );
+
+/** Interceptor para las peticiones de llamadas a APIs privadas
+ * Se gestionará la inyección del token y demás parámetros de las cabeceras
+ */
 
 privateInstance.interceptors.request.use(
   async (config) => {
@@ -42,6 +50,9 @@ privateInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+/** Interceptor para las respuestas de llamadas a APIs privadas
+ * Se gestionará los refrescos del token y la gestión de errores
+ */
 privateInstance.interceptors.response.use(
   (response) => {
     return response;
@@ -63,6 +74,10 @@ privateInstance.interceptors.response.use(
   }
 );
 
+/** Interceptor para las respuestas de llamadas a APIs privadas cuando tengamos las urls absolutas.
+ * Urls obtenidas de JSON HATEOAS 
+ * Se gestionará los refrescos del token y la gestión de errores
+ */
 privateCustomInstance.interceptors.response.use(
   (response) => {
     return response;
@@ -83,16 +98,28 @@ privateCustomInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+/**
+ * Función para la gestión de errores
+ * @param {*} error Objeto error devuelto por el servicio llamado
+ * @returns EL error formateado según lógica de negocio
+ */
 const handleOtherErrors = (error) => {
   // Logica negocio para manejar el resto de errores: 400, 500, etc..
   // Setear en el store / contexto para levantar un modal de error, etc...
   return Promise.reject(error.response.data);
 };
+
+/**
+ * Función para el proceso de refrescar el token
+ * @param {*} originalConfig Parámetros de la llamada original que falló por token exirado
+ * @returns O la respuesta al servicio una vez refrescado el token o un error, si lo ha habido
+ */
 const refreshToken = async (originalConfig) => {
   originalConfig._retry = true;
   try {
     const rs = await privateInstance.post("/auth/refreshtoken", {
-      refreshToken: "TokenService.getLocalRefreshToken()", // ->> refr
+      refreshToken: "TokenService.getLocalRefreshToken()", // ->> refresh
     });
 
     const { accessToken } = rs.data;

@@ -12,28 +12,28 @@ const Home = () => {
   const { state, dispatch } = useAppContext();
   const [data, setData] = useState();
 
-  // const {
-  //   fetchResponse: homeData,
-  //   fetchError: homeError,
-  //   fetchLoading: homeLoading,
-  // } = useAxiosREST({
-  //   isPublicInstance: true,
-  //   method: "post",
-  //   endpoint: { name: END_POINTS_NAMES.urlConPaths, pathValues: [1, 2] },
-  //   headers: {bb:7777},
-  //   body:{ggg:666},
-  //   params: {a:2000, b:'sdsd'},
-  // });
-
   const {
     fetchResponse: homeData,
     fetchError: homeError,
     fetchLoading: homeLoading,
   } = useAxiosREST({
-    isCustomInstance: true,
-    method: "get",
-    endpoint: { name: 'https://pokeapi.co/api/v2/pokemon/ditto'},
+    isPublicInstance: false,
+    method: "post",
+    endpoint: { name: END_POINTS_NAMES.urlConPaths, pathValues: [1, 2] },
+    headers: {bb:7777},
+    body:{ggg:666},
+    params: {a:2000, b:'sdsd'},
   });
+
+  // const {
+  //   fetchResponse: homeData,
+  //   fetchError: homeError,
+  //   fetchLoading: homeLoading,
+  // } = useAxiosREST({
+  //   isCustomInstance: true,
+  //   method: "get",
+  //   endpoint: { name: 'https://pokeapi.co/api/v2/pokemon/ditto'},
+  // });
 
   useEffect(() => {
     if (homeData !== null) {
