@@ -5,18 +5,45 @@ export const BASE_API_URL = {
   PROD: "https://base-url.pro/api/v1",
 };
 
-export const PATHS_NAMES_REGEX = {
+export const END_POINTS_NAMES = {
+  urSimple: 'urSimple',
+  urlConPaths: 'urlConPaths',
+  pokemonTest: 'pokemonTest'
+}
+
+const PATHS_NAMES_REGEX = {
   artistaId: "<<artistaId>>",
   albumId: "<<albumId>>",
 };
 
-export const API_URL = {
-  urSimple: `/artistas`,
-  urlConPath: `/artistas/${PATHS_NAMES_REGEX.artistaId}`,
-  urlConPaths: `/artistas/${PATHS_NAMES_REGEX.artistaId}/albums/${PATHS_NAMES_REGEX.albumId}`,
-  urlConQuery: `/artistas/${PATHS_NAMES_REGEX.artistaId}/albums/list`,
+const END_POINTS_CONFIG = {
+  [END_POINTS_NAMES.urSimple]: {
+    url: `/artistas`,
+  },
+  [END_POINTS_NAMES.urlConPaths]: {
+    url: `/artistas/${PATHS_NAMES_REGEX.artistaId}/albums/${PATHS_NAMES_REGEX.albumId}`,
+    pathNames: [PATHS_NAMES_REGEX.artistaId, PATHS_NAMES_REGEX.albumId],
+  },
+  [END_POINTS_NAMES.pokemonTest]:{
+    url: '/pokemon/ditto'
+  }
 };
 
-export const formatApiUrlPathParam = (url, id, pathParam) => {
-  return url.replace(id, pathParam);
+export const getEndpoint = (endpointName, pathParamsValues = null) => {
+  const { url, pathNames } = END_POINTS_CONFIG[endpointName];
+  return formattedEndpoint(url, pathNames, pathParamsValues);
+};
+
+const formattedEndpoint = (url, pathsNames, pathsValues) => {
+  if (
+    pathsValues &&
+    pathsValues?.length > 0 &&
+    pathsNames?.length > 0 &&
+    pathsValues.length === pathsNames.length
+  ) {
+    return pathsNames.reduce((acc, curr, idx) => {
+      return acc.replace(curr, pathsValues[idx]);
+    }, JSON.parse(JSON.stringify(url)));
+  }
+  return url;
 };

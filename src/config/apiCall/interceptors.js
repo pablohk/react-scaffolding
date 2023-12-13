@@ -12,8 +12,27 @@ const privateInstance = axios.create({
   withCredentials: true,
 });
 
+const privateCustomInstance = axios.create({
+   // HABILITARLO CUANDO SE USE CON LA API DE PIH
+   // DESABILIATDO para pruebas con la pokeapi
+  // withCredentials: true,
+});
+
+publicInstance.interceptors.response.use(
+  (response)=> {
+    return response;
+  },
+  (error) => {
+    console.log(error);
+    // Logica para manejar el error
+    return Promise.reject(error);
+
+  }
+);
+
 privateInstance.interceptors.request.use(
   async (config) => {
+    // AÑADIR en el HEADER los datos necesarios, authorization, etc...
     const token = "await getToken() para recoger el token de donde proceda";
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -25,8 +44,7 @@ privateInstance.interceptors.request.use(
 
 privateInstance.interceptors.response.use(
   (response) => {
-    const transformedResponse = "transformar la respuesta al formato deseado";
-    return transformedResponse;
+    return response;
   },
   async (error) => {
     const originalConfig = error.config;
@@ -45,6 +63,26 @@ privateInstance.interceptors.response.use(
   }
 );
 
+privateCustomInstance.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    const originalConfig = error.config;
+
+    if (error.response) {
+      // Access Token was expired
+      if (error.response.status === 401 && !originalConfig._retry) {
+        return refreshToken(originalConfig);
+      }
+      if (error.response.status === "ANOTHER_STATUS_CODE") {
+        // Do something
+        return handleOtherErrors(error);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 const handleOtherErrors = (error) => {
   // Logica negocio para manejar el resto de errores: 400, 500, etc..
   // Setear en el store / contexto para levantar un modal de error, etc...
@@ -66,4 +104,4 @@ const refreshToken = async (originalConfig) => {
   }
 };
 
-export { publicInstance, privateInstance };
+export { publicInstance, privateInstance, privateCustomInstance };

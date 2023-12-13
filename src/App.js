@@ -35,7 +35,7 @@ const App = () => {
 
   useEffect(() => {
     setShowModal(showError);
-  }, [state.showError]);
+  }, [showError]);
 
   return (
     <>
