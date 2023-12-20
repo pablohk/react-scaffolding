@@ -1,6 +1,6 @@
 /** Path base a usar en las llamadas a los servicios en función del entorno donde se despliegue la aplicación */
 export const BASE_API_URL = {
-  LOCAL: `http://localhost:4000/api/v1`,
+  LOCAL: `http://localhost:4000/${process.env.REACT_APP_LOCAL_MODE_URL}${process.env.REACT_APP_LOCAL_API_KEY}`,
   DEV: "https://base-url.dev/api/v1",
   INT: "https://base-url.int/api/v1",
   PROD: "https://base-url.pro/api/v1",
@@ -10,7 +10,8 @@ export const BASE_API_URL = {
 export const END_POINTS_NAMES = {
   urSimple: 'urSimple',
   urlConPaths: 'urlConPaths',
-  pokemonTest: 'pokemonTest'
+  pokemonTest: 'pokemonTest',
+  login: 'login'
 }
 
 /** Claves de los path params que se pone en las plantillas de los endpoint.
@@ -27,6 +28,9 @@ const PATHS_NAMES_REGEX = {
 const END_POINTS_CONFIG = {
   [END_POINTS_NAMES.urSimple]: {
     url: `/artistas`,
+  },
+  [END_POINTS_NAMES.login]: {
+    url: `/auth/login/`,
   },
   [END_POINTS_NAMES.urlConPaths]: {
     url: `/artistas/${PATHS_NAMES_REGEX.artistaId}/albums/${PATHS_NAMES_REGEX.albumId}`,

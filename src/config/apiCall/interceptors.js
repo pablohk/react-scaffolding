@@ -12,6 +12,10 @@ const publicInstance = axios.create({
 const privateInstance = axios.create({
   baseURL: BASE_API_URL[ENVIRONMENT],
   withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+    "Accept": "application/json, application/hal+json",
+    }
 });
 
 /** Para llamadas a APIs privadas. En este caso se usará cuando tengamos las urls de JSON HATEOAS */

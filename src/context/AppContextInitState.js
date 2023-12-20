@@ -12,4 +12,5 @@ export const initialState = {
     descriptionName: "",
     tipges: "",
   },
+  userAuth: null
 };

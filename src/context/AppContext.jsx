@@ -29,6 +29,11 @@ const appReducer = (state, action) => {
         ...state,
         userProfiling: action.data,
       };
+    case ACTIONS.SET_USER_AUTH:
+      return {
+        ...state,
+        userAuth: action.data,
+      };
 
     default:
       return state;
